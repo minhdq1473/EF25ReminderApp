@@ -22,8 +22,10 @@ class TagCell: UICollectionViewCell {
         didSet{
             if isSelected {
                 view.backgroundColor = currentTag?.uiColor
+                label.textColor = .white
             } else {
-                view.backgroundColor = .neutral3
+                view.backgroundColor = .systemGray5
+                label.textColor = .label
             }
         }
     }
@@ -35,6 +37,14 @@ class TagCell: UICollectionViewCell {
     func configure(tag: Tag) {
         currentTag = tag
         label.text = tag.name
-        view.backgroundColor = tag.uiColor
+        print("Configuring tag: \(tag.name) with color: \(tag.color)")
+        
+        if isSelected {
+            view.backgroundColor = tag.uiColor
+            label.textColor = .white
+        } else {
+            view.backgroundColor = .neutral3
+            label.textColor = .label
+        }
     }
 }

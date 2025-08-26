@@ -11,45 +11,148 @@ import RealmSwift
 class DetailVC: UIViewController {
     @IBOutlet weak var titleTextField: UITextField!
     @IBOutlet weak var descriptionTextField: UITextField!
+    @IBOutlet weak var inputCell: UIStackView!
+    @IBOutlet weak var inputSeparatorView: UIView!
+    
     @IBOutlet weak var dateSwitch: UISwitch!
     @IBOutlet weak var datePicker: UIDatePicker!
-//    @IBOutlet weak var tagButton: UIButton!
+    @IBOutlet weak var dateCell: UIStackView!
+    @IBOutlet weak var dateSeparatorView: UIView!
+
+
     @IBOutlet weak var tagCell: UIStackView!
     @IBOutlet weak var tagLabel: UILabel!
+    
+
+    
+
+    
     var reminder: Reminder?
+    var initialTitle: String = ""
+    var initialDescription: String = ""
     private var selectedTags: [Tag] = []
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
         setupNav()
+        setupStackView()
         fillIfEditing()
         setupTagCellTap()
+        setupDateSwitch()
         updateTagLabel()
+        setupTextFieldValidation()
     }
+    
+    private func setupStackView() {
+        inputCell.layer.cornerRadius = 10
+        dateCell.layer.cornerRadius = 10
+        tagCell.layer.cornerRadius = 10
+        
+        
+        dateCell.isLayoutMarginsRelativeArrangement = true
+        tagCell.isLayoutMarginsRelativeArrangement = true
 
+        dateCell.layoutMargins = UIEdgeInsets(top: 0, left: 12, bottom: 0, right: 12)
+        tagCell.layoutMargins = UIEdgeInsets(top: 0, left: 12, bottom: 0, right: 12)
+
+    }
     private func setupNav() {
         title = "New Reminder"
         navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Cancel", style: .plain, target: self, action: #selector(cancelTapped))
         navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Done", style: .done, target: self, action: #selector(doneTapped))
+        updateDoneButtonState()
+    }
+    
+    private func setupTextFieldValidation() {
+        titleTextField.addTarget(self, action: #selector(titleTextFieldDidChange), for: .editingChanged)
+    }
+    
+    @objc private func titleTextFieldDidChange(_ textField: UITextField) {
+        updateDoneButtonState()
+    }
+    
+    private func updateDoneButtonState() {
+        let titleText = (titleTextField.text ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+        navigationItem.rightBarButtonItem?.isEnabled = !titleText.isEmpty
     }
 
     private func fillIfEditing() {
-        guard let reminder = reminder else { return }
-        title = "Edit Reminder"
-        titleTextField.text = reminder.title
-        descriptionTextField.text = reminder.descriptionText
-        if let date = reminder.dueDate {
-            dateSwitch.isOn = true
-            datePicker.date = date
+        if let reminder = reminder {
+            titleTextField.text = reminder.title
+            descriptionTextField.text = reminder.descriptionText
+            
+            if let date = reminder.dueDate {
+                dateSwitch.isOn = true
+                datePicker.date = date
+                showDatePicker()
+            } else {
+                dateSwitch.isOn = false
+                hideDatePicker()
+            }
+            selectedTags = Array(reminder.tags)
         } else {
+            titleTextField.text = initialTitle.isEmpty ? "New Reminder" : initialTitle
+            descriptionTextField.text = initialDescription
+            
             dateSwitch.isOn = false
+            hideDatePicker()
+            datePicker.date = Calendar.current.startOfDay(for: Date())
         }
-        selectedTags = Array(reminder.tags)
+        updateDoneButtonState()
+    }
+    
+    private func setupDateSwitch() {
+        if dateSwitch.isOn {
+            showDatePicker()
+        } else {
+            hideDatePicker()
+        }
     }
 
     @IBAction func dateSwitchChanged(_ sender: UISwitch) {
-        datePicker.isHidden = !sender.isOn
+        print("Date switch changed to: \(sender.isOn)")
+        if sender.isOn {
+            showDatePicker()
+            if datePicker.date < Calendar.current.startOfDay(for: Date()) {
+                datePicker.date = Calendar.current.startOfDay(for: Date())
+            }
+        } else {
+            hideDatePicker()
+        }
+    }
+    
+    private func showDatePicker() {
+        print("Showing date picker")
+        datePicker.isHidden = false
+        // For inline date picker, we need to set the height to show the full calendar
+        for constraint in datePicker.constraints {
+            if constraint.firstAttribute == .height {
+                print("Found height constraint, setting to 314")
+                constraint.constant = 314
+                break
+            }
+        }
+        UIView.animate(withDuration: 0.3) {
+            self.view.layoutIfNeeded()
+        }
+    }
+    
+    private func hideDatePicker() {
+        print("Hiding date picker")
+        // For inline date picker, we need to set the height to 0 to hide it
+        for constraint in datePicker.constraints {
+            if constraint.firstAttribute == .height {
+                print("Found height constraint, setting to 0")
+                constraint.constant = 0
+                break
+            }
+        }
+        UIView.animate(withDuration: 0.3) {
+            self.view.layoutIfNeeded()
+        } completion: { _ in
+            self.datePicker.isHidden = true
+        }
     }
 
     private func setupTagCellTap() {
@@ -60,6 +163,7 @@ class DetailVC: UIViewController {
 
     @objc private func openTagPicker() {
         let vc = TagVC(nibName: "TagVC", bundle: nil)
+        vc.selectedTags = selectedTags // Pass current selection
         vc.onSelect = { [weak self] tags in
             self?.selectedTags = tags
             self?.updateTagLabel()
@@ -68,35 +172,27 @@ class DetailVC: UIViewController {
         present(nav, animated: true)
     }
 
-//    private func updateTagButton() {
-//        if let tag = selectedTag {
-//            tagButton.setTitle(tag.rawValue, for: .normal)
-//            tagButton.backgroundColor = tag.color
-//            tagButton.setTitleColor(.white, for: .normal)
-//            tagButton.layer.cornerRadius = 8
-//            tagButton.layer.masksToBounds = true
-//        } else {
-//            tagButton.setTitle("Tag", for: .normal)
-//            tagButton.backgroundColor = .systemGray5
-//            tagButton.setTitleColor(.label, for: .normal)
-//        }
-//    }
-
     @objc private func cancelTapped() {
-        if presentingViewController != nil && navigationController?.viewControllers.first == self {
-            dismiss(animated: true)
-        } else {
-            navigationController?.popViewController(animated: true)
-        }
+        dismiss(animated: true)
     }
 
     @objc private func doneTapped() {
         let titleText = titleTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
         guard !titleText.isEmpty else { return }
+        
         let descriptionText = descriptionTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines)
-        let dueDate = dateSwitch.isOn ? datePicker.date : nil
+        
+        // Determine due date
+        let dueDate: Date?
+        if dateSwitch.isOn {
+            dueDate = datePicker.date
+        } else {
+            // Default to today if no due date specified
+            dueDate = Calendar.current.startOfDay(for: Date())
+        }
 
         if let editing = reminder {
+            // Update existing reminder
             do {
                 let realm = try Realm()
                 try realm.write {
@@ -108,12 +204,17 @@ class DetailVC: UIViewController {
                 }
             } catch {
                 print("Save error: \(error)")
+                // Show error alert
+                showErrorAlert("Failed to update reminder")
+                return
             }
         } else {
+            // Create new reminder
             let newItem = Reminder(title: titleText, descriptionText: descriptionText, dueDate: dueDate, tags: selectedTags)
             ReminderRealmManager.shared.addReminder(newItem)
         }
-        navigationController?.popViewController(animated: true)
+        
+        dismiss(animated: true)
     }
 
     private func updateTagLabel() {
@@ -125,15 +226,10 @@ class DetailVC: UIViewController {
             tagLabel.textColor = .label
         }
     }
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
+    
+    private func showErrorAlert(_ message: String) {
+        let alert = UIAlertController(title: "Error", message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        present(alert, animated: true)
     }
-    */
-
 }

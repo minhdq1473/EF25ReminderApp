@@ -9,6 +9,7 @@ import UIKit
 
 class TagVC: UIViewController {
     var onSelect: (([Tag]) -> Void)?
+    var selectedTags: [Tag] = [] // Add this property
     private var tags: [Tag] = []
     @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var containerView: UIView!
@@ -24,8 +25,10 @@ class TagVC: UIViewController {
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        containerHeight.constant = collectionView.contentSize.height + 24
-//        containerHeight.constant = collectionView.collectionViewLayout.collectionViewContentSize.height + 24
+        let contentHeight = collectionView.collectionViewLayout.collectionViewContentSize.height
+        let newHeight = max(contentHeight + 24, 120) 
+        containerHeight.constant = newHeight
+        print("TagVC container height set to: \(newHeight), content height: \(contentHeight)")
     }
     
     private func setupNavigationBar() {
@@ -41,12 +44,21 @@ class TagVC: UIViewController {
         collectionView.dataSource = self
         collectionView.delegate = self
         collectionView.allowsMultipleSelection = true
-
     }
     
     private func loadTags() {
         tags = ReminderRealmManager.shared.getAllTags()
+        print("Loaded \(tags.count) tags: \(tags.map { $0.name })")
         collectionView.reloadData()
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            for (index, tag) in self.tags.enumerated() {
+                if self.selectedTags.contains(where: { $0.id == tag.id }) {
+                    let indexPath = IndexPath(item: index, section: 0)
+                    self.collectionView.selectItem(at: indexPath, animated: false, scrollPosition: [])
+                }
+            }
+        }
     }
 
     @objc private func cancelTapped() {
@@ -77,9 +89,8 @@ class TagVC: UIViewController {
         let sheet = UIAlertController(title: "Choose a color", message: nil, preferredStyle: .actionSheet)
         for (title, hex) in palette {
             sheet.addAction(UIAlertAction(title: title, style: .default, handler: { _ in
-                let tag = ReminderRealmManager.shared.ensureTag(named: name, colorKey: hex)
-                self.tags.append(tag)
-                self.collectionView.reloadData()
+//                let tag = ReminderRealmManager.shared.ensureTag(named: name, colorKey: hex)
+                self.loadTags()
             }))
         }
         sheet.addAction(UIAlertAction(title: "Cancel", style: .cancel))
@@ -96,10 +107,12 @@ class TagVC: UIViewController {
 
 extension TagVC: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        print("TagVC numberOfItemsInSection: \(tags.count)")
         return tags.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        print("TagVC cellForItemAt: \(indexPath.item) - \(tags[indexPath.item].name)")
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "TagCell", for: indexPath) as! TagCell
         cell.configure(tag: tags[indexPath.item])
         return cell
@@ -108,7 +121,11 @@ extension TagVC: UICollectionViewDataSource {
 
 extension TagVC: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        // wait for Done
+        // Selection is handled automatically by the collection view
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didDeselectItemAt indexPath: IndexPath) {
+        // Deselection is handled automatically by the collection view
     }
 }
 
@@ -117,7 +134,8 @@ extension TagVC: UICollectionViewDelegateFlowLayout {
         let text = tags[indexPath.item].name as NSString
         let font = UIFont.systemFont(ofSize: 16, weight: .medium)
         let size = text.size(withAttributes: [.font: font])
-        return CGSize(width: size.width, height: 27)
+        let width = max(size.width + 24, 80) // Minimum width of 80
+        return CGSize(width: width, height: 36)
     }
 }
 
