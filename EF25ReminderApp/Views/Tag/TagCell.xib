@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23727" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_12" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23721"/>
+        <capability name="Named colors" minToolsVersion="9.0"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="gTV-IL-0wX" customClass="TagCell" customModule="EF25ReminderApp" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="89" height="50"/>
+            <autoresizingMask key="autoresizingMask"/>
+            <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
+                <rect key="frame" x="0.0" y="0.0" width="89" height="50"/>
+                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                <subviews>
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="vtv-nk-jAe">
+                        <rect key="frame" x="0.0" y="0.0" width="89" height="50"/>
+                        <subviews>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="CGT-hJ-y38">
+                                <rect key="frame" x="24.666666666666668" y="15.333333333333334" width="39.666666666666657" height="19.333333333333329"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                <color key="textColor" name="Neutral5"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                        </subviews>
+                        <color key="backgroundColor" name="AccentColor"/>
+                        <constraints>
+                            <constraint firstItem="CGT-hJ-y38" firstAttribute="centerX" secondItem="vtv-nk-jAe" secondAttribute="centerX" id="DzG-CT-rTb"/>
+                            <constraint firstItem="CGT-hJ-y38" firstAttribute="centerY" secondItem="vtv-nk-jAe" secondAttribute="centerY" id="wO7-VT-W99"/>
+                        </constraints>
+                    </view>
+                </subviews>
+            </view>
+            <viewLayoutGuide key="safeArea" id="ZTg-uK-7eu"/>
+            <constraints>
+                <constraint firstItem="vtv-nk-jAe" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" id="6bD-Rv-iGd"/>
+                <constraint firstAttribute="bottom" secondItem="vtv-nk-jAe" secondAttribute="bottom" id="QRe-6r-loF"/>
+                <constraint firstAttribute="trailing" secondItem="vtv-nk-jAe" secondAttribute="trailing" id="g9P-h3-lIo"/>
+                <constraint firstItem="vtv-nk-jAe" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" id="jX5-UT-ZCO"/>
+            </constraints>
+            <size key="customSize" width="89" height="50"/>
+            <connections>
+                <outlet property="label" destination="CGT-hJ-y38" id="ZPs-Z2-mOB"/>
+                <outlet property="view" destination="vtv-nk-jAe" id="JKF-j8-F9x"/>
+            </connections>
+            <point key="canvasLocation" x="-8.3969465648854964" y="-11.267605633802818"/>
+        </collectionViewCell>
+    </objects>
+    <resources>
+        <namedColor name="AccentColor">
+            <color red="0.0" green="0.46000000000000002" blue="0.89000000000000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
+        <namedColor name="Neutral5">
+            <color red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
+    </resources>
+</document>

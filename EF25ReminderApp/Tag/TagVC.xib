@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23727" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_12" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23721"/>
+        <capability name="Named colors" minToolsVersion="9.0"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="TagVC" customModule="EF25ReminderApp" customModuleProvider="target">
+            <connections>
+                <outlet property="collectionView" destination="CL6-6g-wb5" id="2QS-d3-mAf"/>
+                <outlet property="containerHeight" destination="5JT-VL-HU6" id="1Ku-9G-QtQ"/>
+                <outlet property="containerView" destination="8jI-bc-9ec" id="9es-9C-RRT"/>
+                <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
+            </connections>
+        </placeholder>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="i5M-Pr-FkT">
+            <rect key="frame" x="0.0" y="0.0" width="375" height="685"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="8jI-bc-9ec" userLabel="container">
+                    <rect key="frame" x="16" y="131" width="343" height="90"/>
+                    <subviews>
+                        <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" scrollEnabled="NO" dataMode="none" translatesAutoresizingMaskIntoConstraints="NO" id="CL6-6g-wb5">
+                            <rect key="frame" x="12" y="12" width="319" height="66"/>
+                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="LI2-KE-UeA">
+                                <size key="itemSize" width="128" height="128"/>
+                                <size key="headerReferenceSize" width="0.0" height="0.0"/>
+                                <size key="footerReferenceSize" width="0.0" height="0.0"/>
+                                <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
+                            </collectionViewFlowLayout>
+                        </collectionView>
+                    </subviews>
+                    <color key="backgroundColor" name="Neutral5"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="90" id="5JT-VL-HU6"/>
+                        <constraint firstAttribute="bottom" secondItem="CL6-6g-wb5" secondAttribute="bottom" constant="12" id="CyY-Fk-efK"/>
+                        <constraint firstAttribute="trailing" secondItem="CL6-6g-wb5" secondAttribute="trailing" constant="12" id="HCW-3W-QZ1"/>
+                        <constraint firstItem="CL6-6g-wb5" firstAttribute="top" secondItem="8jI-bc-9ec" secondAttribute="top" constant="12" id="lDf-z0-qkb"/>
+                        <constraint firstItem="CL6-6g-wb5" firstAttribute="leading" secondItem="8jI-bc-9ec" secondAttribute="leading" constant="12" id="sBG-wD-nGP"/>
+                    </constraints>
+                </view>
+            </subviews>
+            <viewLayoutGuide key="safeArea" id="fnl-2z-Ty3"/>
+            <color key="backgroundColor" name="Background"/>
+            <constraints>
+                <constraint firstItem="8jI-bc-9ec" firstAttribute="top" secondItem="fnl-2z-Ty3" secondAttribute="top" constant="13" id="U8S-WJ-6uv"/>
+                <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="8jI-bc-9ec" secondAttribute="trailing" constant="16" id="wqj-lc-bqV"/>
+                <constraint firstItem="8jI-bc-9ec" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" constant="16" id="xBP-Wu-tgW"/>
+            </constraints>
+            <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+            <point key="canvasLocation" x="34.351145038167935" y="-5.2816901408450709"/>
+        </view>
+    </objects>
+    <resources>
+        <namedColor name="Background">
+            <color red="0.95686274509803926" green="0.96470588235294119" blue="0.98039215686274506" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
+        <namedColor name="Neutral5">
+            <color red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
+    </resources>
+</document>
