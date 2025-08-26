@@ -22,29 +22,20 @@ class TagCell: UICollectionViewCell {
         didSet{
             if isSelected {
                 view.backgroundColor = currentTag?.uiColor
-                label.textColor = .white
             } else {
-                view.backgroundColor = .systemGray5
-                label.textColor = .label
+                view.backgroundColor = .neutral3
             }
         }
     }
-    
-    private func setupView() {
-        
-    }
-
+   
     func configure(tag: Tag) {
         currentTag = tag
-        label.text = tag.name
-        print("Configuring tag: \(tag.name) with color: \(tag.color)")
+        label.text = tag.rawValue
         
         if isSelected {
             view.backgroundColor = tag.uiColor
-            label.textColor = .white
         } else {
             view.backgroundColor = .neutral3
-            label.textColor = .label
         }
     }
 }

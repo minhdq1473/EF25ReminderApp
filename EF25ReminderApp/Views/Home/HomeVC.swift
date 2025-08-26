@@ -252,13 +252,10 @@ class HomeVC: UIViewController {
     
     private func saveNewReminder(title: String, description: String?) {
         let trimmedTitle = title.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !trimmedTitle.isEmpty else {
-            cancelInlineAdding()
-            return
-        }
+        let finalTitle = trimmedTitle.isEmpty ? "New Reminder" : trimmedTitle
         
         let dueDate = Calendar.current.startOfDay(for: Date())
-        let reminder = Reminder(title: trimmedTitle, descriptionText: description?.trimmingCharacters(in: .whitespacesAndNewlines), dueDate: dueDate)
+        let reminder = Reminder(title: finalTitle, descriptionText: description?.trimmingCharacters(in: .whitespacesAndNewlines), dueDate: dueDate)
         ReminderRealmManager.shared.addReminder(reminder)
         
         isAddingInline = false
@@ -292,6 +289,9 @@ extension HomeVC: UITableViewDelegate, UITableViewDataSource {
         if section == 0 {
             return todayReminders.isEmpty ? nil : "Today"
         } else {
+            if isAddingInline && upcomingReminders.isEmpty && todayReminders.isEmpty {
+                return nil
+            }
             return (upcomingReminders.isEmpty && !isAddingInline) ? nil : "Upcoming"
         }
     }
@@ -363,14 +363,14 @@ extension HomeVC: UITableViewDelegate, UITableViewDataSource {
     }
     
     private func presentDetailVC(with reminder: Reminder) {
-        let vc = DetailVC(nibName: "DetailVC", bundle: nil)
+        let vc = DetailVC()
         vc.reminder = reminder
         let nav = UINavigationController(rootViewController: vc)
         present(nav, animated: true)
     }
     
     private func presentDetailVC(title: String?, description: String?) {
-        let vc = DetailVC(nibName: "DetailVC", bundle: nil)
+        let vc = DetailVC()
         vc.initialTitle = title ?? ""
         vc.initialDescription = description ?? ""
         let nav = UINavigationController(rootViewController: vc)

@@ -14,14 +14,24 @@ class Reminder: Object {
     @Persisted var descriptionText: String?
     @Persisted var dueDate: Date?
     @Persisted var createdAt: Date = Date()
-    @Persisted var tags = List<Tag>()
+    @Persisted var tagRawValues = List<String>() 
+
+    var tags: [Tag] {
+        get {
+            return tagRawValues.compactMap { Tag(rawValue: $0) }
+        }
+        set {
+            tagRawValues.removeAll()
+            tagRawValues.append(objectsIn: newValue.map { $0.rawValue })
+        }
+    }
 
     convenience init(title: String, descriptionText: String? = nil, dueDate: Date? = nil, tags: [Tag] = []) {
         self.init()
         self.title = title
         self.descriptionText = descriptionText
         self.dueDate = dueDate
-        self.tags.append(objectsIn: tags)
+        self.tags = tags
         self.createdAt = Date()
     }
 }

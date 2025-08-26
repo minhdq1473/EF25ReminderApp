@@ -23,10 +23,6 @@ class DetailVC: UIViewController {
     @IBOutlet weak var tagCell: UIStackView!
     @IBOutlet weak var tagLabel: UILabel!
     
-
-    
-
-    
     var reminder: Reminder?
     var initialTitle: String = ""
     var initialDescription: String = ""
@@ -105,30 +101,30 @@ class DetailVC: UIViewController {
     private func setupDateSwitch() {
         if dateSwitch.isOn {
             showDatePicker()
+            dateSeparatorView.isHidden = false
         } else {
             hideDatePicker()
+            dateSeparatorView.isHidden = true
         }
     }
 
     @IBAction func dateSwitchChanged(_ sender: UISwitch) {
-        print("Date switch changed to: \(sender.isOn)")
         if sender.isOn {
             showDatePicker()
+            dateSeparatorView.isHidden = false
             if datePicker.date < Calendar.current.startOfDay(for: Date()) {
                 datePicker.date = Calendar.current.startOfDay(for: Date())
             }
         } else {
             hideDatePicker()
+            dateSeparatorView.isHidden = true
         }
     }
     
     private func showDatePicker() {
-        print("Showing date picker")
         datePicker.isHidden = false
-        // For inline date picker, we need to set the height to show the full calendar
         for constraint in datePicker.constraints {
             if constraint.firstAttribute == .height {
-                print("Found height constraint, setting to 314")
                 constraint.constant = 314
                 break
             }
@@ -139,11 +135,8 @@ class DetailVC: UIViewController {
     }
     
     private func hideDatePicker() {
-        print("Hiding date picker")
-        // For inline date picker, we need to set the height to 0 to hide it
         for constraint in datePicker.constraints {
             if constraint.firstAttribute == .height {
-                print("Found height constraint, setting to 0")
                 constraint.constant = 0
                 break
             }
@@ -163,7 +156,7 @@ class DetailVC: UIViewController {
 
     @objc private func openTagPicker() {
         let vc = TagVC(nibName: "TagVC", bundle: nil)
-        vc.selectedTags = selectedTags // Pass current selection
+        vc.selectedTags = selectedTags 
         vc.onSelect = { [weak self] tags in
             self?.selectedTags = tags
             self?.updateTagLabel()
@@ -182,34 +175,27 @@ class DetailVC: UIViewController {
         
         let descriptionText = descriptionTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines)
         
-        // Determine due date
         let dueDate: Date?
         if dateSwitch.isOn {
             dueDate = datePicker.date
         } else {
-            // Default to today if no due date specified
             dueDate = Calendar.current.startOfDay(for: Date())
         }
 
         if let editing = reminder {
-            // Update existing reminder
             do {
                 let realm = try Realm()
                 try realm.write {
                     editing.title = titleText
                     editing.descriptionText = descriptionText
                     editing.dueDate = dueDate
-                    editing.tags.removeAll()
-                    editing.tags.append(objectsIn: selectedTags)
+                    editing.tags = selectedTags
                 }
             } catch {
                 print("Save error: \(error)")
-                // Show error alert
-                showErrorAlert("Failed to update reminder")
                 return
             }
         } else {
-            // Create new reminder
             let newItem = Reminder(title: titleText, descriptionText: descriptionText, dueDate: dueDate, tags: selectedTags)
             ReminderRealmManager.shared.addReminder(newItem)
         }
@@ -222,14 +208,8 @@ class DetailVC: UIViewController {
             tagLabel.text = "None"
             tagLabel.textColor = .secondaryLabel
         } else {
-            tagLabel.text = selectedTags.map { $0.name }.joined(separator: ", ")
+            tagLabel.text = selectedTags.map { $0.rawValue }.joined(separator: ", ")
             tagLabel.textColor = .label
         }
-    }
-    
-    private func showErrorAlert(_ message: String) {
-        let alert = UIAlertController(title: "Error", message: message, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "OK", style: .default))
-        present(alert, animated: true)
     }
 }

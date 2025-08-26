@@ -13,11 +13,16 @@ class ReminderRealmManager {
     private init() {
         do {
             let config = Realm.Configuration(
-                schemaVersion: 1,
+                schemaVersion: 2,
                 migrationBlock: { migration, oldSchemaVersion in
                     if oldSchemaVersion < 1 {
                         migration.enumerateObjects(ofType: Reminder.className()) { oldObject, newObject in
                             newObject!["createdAt"] = Date()
+                        }
+                    }
+                    if oldSchemaVersion < 2 {
+                        migration.enumerateObjects(ofType: Reminder.className()) { oldObject, newObject in
+                            newObject!["tagRawValues"] = List<String>()
                         }
                     }
                 }
@@ -25,7 +30,6 @@ class ReminderRealmManager {
             Realm.Configuration.defaultConfiguration = config
             
             realm = try Realm()
-            seedDefaultTagsIfNeeded()
         } catch {
             fatalError("Failed to initialize Realm: \(error)")
         }
@@ -88,7 +92,7 @@ class ReminderRealmManager {
     
     func getRemindersByTag(_ tag: Tag) -> [Reminder] {
         return getAllReminders().filter { reminder in
-            reminder.tags.contains(where: { $0.id == tag.id })
+            reminder.tags.contains(tag)
         }
     }
     
@@ -101,52 +105,5 @@ class ReminderRealmManager {
         return token
     }
     
-    func getAllTags() -> [Tag] {
-        let tags = Array(realm.objects(Tag.self))
-        print("getAllTags returned \(tags.count) tags: \(tags.map { $0.name })")
-        return tags
-    }
-    
-    func addTag(_ tag: Tag) {
-        do {
-            try realm.write {
-                realm.add(tag)
-            }
-        } catch {
-            print("Error adding tag: \(error)")
-        }
-    }
-    
-    func ensureTag(named name: String, colorKey: String) -> Tag {
-        if let existing = realm.objects(Tag.self).filter("name == %@", name).first {
-            return existing
-        }
-        let color = TagColor(rawValue: colorKey) ?? .systemBlue
-        let tag = Tag(name: name, color: color)
-        addTag(tag)
-        return tag
-    }
-    
-    private func seedDefaultTagsIfNeeded() {
-        let defaults: [(String, TagColor)] = [
-            ("Study", .study),
-            ("Work", .work),
-            ("Habit", .habit),
-            ("Health", .health)
-        ]
-        if realm.objects(Tag.self).count == 0 {
-            do {
-                try realm.write {
-                    for (name, color) in defaults {
-                        realm.add(Tag(name: name, color: color))
-                    }
-                }
-                print("Seeded \(defaults.count) default tags")
-            } catch {
-                print("Seed tags error: \(error)")
-            }
-        } else {
-            print("Tags already exist, count: \(realm.objects(Tag.self).count)")
-        }
-    }
+
 }
